@@ -1,8 +1,9 @@
 package com.snilloc.hilt1
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 //Using this annotation we don't have to inject MainActivity to the dagger graph
@@ -19,20 +20,26 @@ class MainActivity : AppCompatActivity() {
 
         println(someClass.doAThing())
         println(someClass.doSomeOtherThing())
+
     }
 }
+
 //Dependencies that will be supplied by Dagger
 //Dagger is creating an instance of this class at run time then making it available at run time
+//Singleton Scope makes the dependency live as long as the Application
+@ActivityScoped
 class SomeClass
 @Inject
 constructor(
-        private val someOtherClass: SomeOtherClass
+    //Constructor injection
+    @Inject
+    private val someOtherClass: SomeOtherClass
 ) {
-    fun doAThing() : String {
+    fun doAThing(): String {
         return "Look i did a thing!"
     }
 
-    fun doSomeOtherThing() : String {
+    fun doSomeOtherThing(): String {
         return someOtherClass.doSomeOtherThing()
     }
 }
@@ -40,7 +47,7 @@ constructor(
 class SomeOtherClass
 @Inject
 constructor() {
-    fun doSomeOtherThing() : String {
-        return "Look I did some other thing!!"
+    fun doSomeOtherThing(): String {
+        return "Look I did some other thing!"
     }
 }
