@@ -49,8 +49,7 @@ interface SomeInterface {
     fun getAThing() : String
 }
 
-//Telling Hilt how to build objects it doesn't know how to
-//We are building the Interface Implementation object
+//Telling Hilt how to build the Interface Implementation object it doesn't know how to
 //Install this module in the SingletonComponent(Application lifecycle)
 
 @InstallIn(SingletonComponent::class)
