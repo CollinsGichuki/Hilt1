@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
 class SomeClass
 @Inject
 constructor(
-    private val someInterfaceImpl : SomeInterface
+    private val someInterfaceImpl : SomeInterface,
+    private val gson: Gson
 ) {
     fun doAThing() : String {
         return "Look i did ${someInterfaceImpl.getAThing()}"
