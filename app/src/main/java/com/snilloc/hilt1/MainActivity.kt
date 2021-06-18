@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.ApplicationComponentManager
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 //Using this annotation we don't have to inject MainActivity to the dagger graph
@@ -25,7 +26,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        println(someClass.doAThing())
+        println(someClass.doAThing1())
+        println(someClass.doAThing2())
     }
 }
 //Dependencies that will be supplied by Dagger
@@ -33,19 +35,29 @@ class MainActivity : AppCompatActivity() {
 class SomeClass
 @Inject
 constructor(
-    private val someInterfaceImpl : SomeInterface,
-    private val gson: Gson
+    //Use the annotations we have created to distinguish between them
+    @Impl1 private val someInterfaceImpl1 : SomeInterface,
+    @Impl1 private val someInterfaceImpl2 : SomeInterface
 ) {
-    fun doAThing() : String {
-        return "Look i did ${someInterfaceImpl.getAThing()}"
+    fun doAThing1() : String {
+        return "Look i did ${someInterfaceImpl1.getAThing()}"
+    }
+    fun doAThing2() : String {
+        return "Look i did ${someInterfaceImpl2.getAThing()}"
     }
 }
-class SomeInterfaceImpl
-constructor(
-    private val someDependency : String
-) : SomeInterface{
+//Same Interface, 2 different implementations with 2 different String dependencies
+
+class SomeInterfaceImpl1
+constructor() : SomeInterface{
     override fun getAThing(): String {
-        return "A Thing"
+        return "A Thing1"
+    }
+
+}class SomeInterfaceImpl2
+constructor() : SomeInterface{
+    override fun getAThing(): String {
+        return "A Thing2"
     }
 
 }
@@ -60,23 +72,28 @@ interface SomeInterface {
 @InstallIn(SingletonComponent::class)
 @Module
  class MyModule {
-    //The dependency needed in provideSomeDependency constructor
+    //Use the annotations we have created to distinguish between them
+    @Impl1
     @Singleton
     @Provides
-    fun provideSomeString() : String {
-        return "Some String"
-    }
-
-    @Singleton
-    @Provides
-     fun provideSomeDependency(someString : String ) : SomeInterface {
-         return SomeInterfaceImpl(someString)
+     fun provideSomeDependency1() : SomeInterface {
+         return SomeInterfaceImpl1()
      }
 
+    @Impl2
     @Singleton
     @Provides
-    fun provideGson() : Gson {
-        return  Gson()
-    }
+     fun provideSomeDependency2() : SomeInterface {
+         return SomeInterfaceImpl2()
+     }
 
 }
+
+//Our new annotations for each implementation
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class Impl1
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class Impl2
