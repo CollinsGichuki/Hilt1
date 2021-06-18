@@ -2,8 +2,10 @@ package com.snilloc.hilt1
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.internal.managers.ApplicationComponentManager
@@ -38,7 +40,9 @@ constructor(
     }
 }
 class SomeInterfaceImpl
-constructor() : SomeInterface{
+constructor(
+    private val someDependency : String
+) : SomeInterface{
     override fun getAThing(): String {
         return "A Thing"
     }
@@ -54,11 +58,24 @@ interface SomeInterface {
 
 @InstallIn(SingletonComponent::class)
 @Module
-abstract class MyModule {
+ class MyModule {
+    //The dependency needed in provideSomeDependency constructor
     @Singleton
-    @Binds
-    abstract fun bindSomeDependency(
-        someImpl : SomeInterfaceImpl
-    ) : SomeInterface
+    @Provides
+    fun provideSomeString() : String {
+        return "Some String"
+    }
+
+    @Singleton
+    @Provides
+     fun provideSomeDependency(someString : String ) : SomeInterface {
+         return SomeInterfaceImpl(someString)
+     }
+
+    @Singleton
+    @Provides
+    fun provideGson() : Gson {
+        return  Gson()
+    }
 
 }
